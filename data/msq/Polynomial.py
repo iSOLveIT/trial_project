@@ -4,10 +4,10 @@ import logging.config
 from time import sleep
 from azure.quantum.optimization import Term
 
-from logger.logger_config import LOGGING_CONFIG
+# from logger.logger_config import LOGGING_CONFIG
 
 # Set up logger
-logging.config.dictConfig(LOGGING_CONFIG)
+# logging.config.dictConfig(LOGGING_CONFIG)
 logger = logging.getLogger(__name__)
 
 
