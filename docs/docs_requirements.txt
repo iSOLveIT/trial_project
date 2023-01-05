@@ -1,7 +1,7 @@
 Sphinx
 sphinx_rtd_theme
 azure-quantum==0.22.187631
-numpy==1.21.1
+numpy
 plotly-express==0.4.1
 kaleido==0.2.1
 pytest==6.2.4
