@@ -1,0 +1,50 @@
+# This is a workflow to compile Sphinx sources on *main* branch and update *docs-build* branch
+
+name: Compile Sphinx source and update docs-build branch
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - docs/**
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v2
+      - uses: actions/checkout@master
+        with:
+          fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
+      - name: Update pip
+        run: |
+          pip install -U wheel
+          pip install -U setuptools
+          python -m pip install -U pip
+      - name: Get pip cache dir
+        id: pip-cache
+        run: |
+          echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
+      - name: Pip cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.pip-cache.outputs.dir }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: Build and Commit
+        uses: sphinx-notes/pages@v2
+        with:
+          documentation_path: ./docs
+          requirements_path: ./docs/docs_requirements.txt
+          target-branch: docs-build
+          sphinx_version: 6.0.0
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: docs-build
+          force: true

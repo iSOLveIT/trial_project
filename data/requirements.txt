@@ -1,0 +1,9 @@
+azure-quantum==0.22.187631
+numpy==1.21.1
+plotly-express==0.4.1
+kaleido==0.2.1
+pytest==6.2.4
+oneqloud-polynomials==2.0.0rc5
+qubogen==0.1.1
+azure-cli==2.36.0
+azure-storage-blob==12.12.0

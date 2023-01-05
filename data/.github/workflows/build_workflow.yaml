@@ -1,0 +1,45 @@
+name: build-image
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+jobs:
+  push_to_quay_registry:
+    name: Push image to Quay registry
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v2
+
+      - name: Login to Quay
+        uses: docker/login-action@v1
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+
+      - name: Generate tag
+        id: tag-generator
+        run: |
+          sha=${GITHUB_SHA::8}
+          timestamp=$(date +'%Y.%m.%d')
+          echo "::set-output name=BUILD_ID::${timestamp}.${sha}"
+
+      - name: Build image and push it to the Quay registry
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          tags: quay.io/1qbit/msq:${{ steps.tag-generator.outputs.BUILD_ID }}
+          push: true
+
+      - name: Create README badge with image tag
+        uses: schneegans/dynamic-badges-action@v1.1.0
+        with:
+          auth: ${{ secrets.GIST_SECRET }}
+          gistID: 14b70f2a1b7f5d3cc59a97125a9c12b3
+          filename: image_tag.json
+          label: Latest image
+          message: ${{ steps.tag-generator.outputs.BUILD_ID }}
+          color: blue
